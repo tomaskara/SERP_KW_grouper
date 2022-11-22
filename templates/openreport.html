@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Open report</h1>
+    <form method="post">
+    {{ form.hidden_tag() }}
+
+
+    {{ form.report_name.label(class="form-label") }}
+    {{ form.report_name(class="form-control") }}
+    <br/>
+    {{ form.accuracy.label }}
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+        {% for subfield in form.accuracy %}
+    <tr>
+        <td>{{ subfield(class="btn-check") }}</td>
+        <td>{{ subfield.label(class="btn btn-outline-primary") }}</td>
+    </tr>
+{% endfor %}
+    </div>
+    <br/>
+    <br/>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+
+    {% if nalezeno == False %}
+        <br/>
+        <div class="alert alert-danger" role="alert">
+        Report not found
+        </div>
+        {% endif %}
+    {% if nalezeno == True %}
+        <a class="btn btn-outline-primary float-end" href="{{ url_for('download', filename=export_filename) }}">Export excel</a>
+        <br/>
+        <br/>
+        <div class="accordion" id="accordionExample">
+        {% for urls,kws in results.items() %}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ loop.index }}" >
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                  {{ kws|first }}...{{ kws|last }} &nbsp;<b>Keywords: {{kws|length}}</b>&nbsp;<b>Accuracy: {{urls|length}}</b>
+              </button>
+
+            </h2>
+            <div id="collapse{{ loop.index }}" class="ccordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+              <table>
+                  {% for kw in kws %}
+
+                      <tr>
+                        <td>{{ kw }}</td>
+                        </tr>
+                      {% endfor %}
+              </table>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock %}
